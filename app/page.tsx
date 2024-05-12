@@ -1,8 +1,19 @@
+import { PrismaClient } from "@prisma/client";
 import Header from "./components/Header";
 import RestaurantCard from "./components/RestaurantCard";
 import "tailwindcss/tailwind.css";
 
-export default function Home() {
+const prisma = new PrismaClient();
+
+const fetchRestaurants = async () => {
+  const restaurants = await prisma.restaurant.findMany();
+  return restaurants;
+};
+
+export default async function Home() {
+  const restaurants = await fetchRestaurants();
+  console.log("my data", restaurants);
+
   return (
     <main>
       <Header />
