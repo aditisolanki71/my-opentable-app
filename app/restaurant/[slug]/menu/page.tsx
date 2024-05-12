@@ -1,16 +1,35 @@
-import RestaurantDetailsHeader from "../../component/RestaurantDetailHeader";
-import RestaurantMenus from "../../component/RestaurantMenus";
+import { PrismaClient } from "@prisma/client";
+import "tailwindcss/tailwind.css";
 import RestaurantNavbar from "../../component/RestaurantNavbar";
+import RestaurantMenus from "../../component/RestaurantMenus";
 
-const RestaurantMenu = () => {
-  return (
-    <>
-      <div className="bg-white w-[100%] rounded p-3 shadow">
-        <RestaurantNavbar />
-        <RestaurantMenus />
-      </div>
-    </>
-  );
+const prisma = new PrismaClient();
+
+const fetchRestaurantMenus = async (slug: string) => {
+  const restaurant = await prisma.restaurant.findUnique({
+    where: {
+      slug,
+    },
+    select: {
+      items: true,
+    },
+  });
+  if (!restaurant) {
+    throw new Error();
+  }
+  return restaurant?.items;
 };
 
-export default RestaurantMenu;
+export default async function RestaurantMenu({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const menu = await fetchRestaurantMenus(params?.slug);
+  return (
+    <div className="bg-white w-[100%] rounded p-3 shadow">
+      <RestaurantNavbar slug={params.slug} />
+      <RestaurantMenus menu={menu} />
+    </div>
+  );
+}

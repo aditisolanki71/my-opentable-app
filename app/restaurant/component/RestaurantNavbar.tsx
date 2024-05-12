@@ -11,7 +11,7 @@ const RestaurantNavbar = (props: RestaurantNavbarProps) => {
       <Link href={`/restaurant/${slug}`} className="mr-7">
         Overview
       </Link>
-      <Link href={`${slug}/menu`} className="mr-7">
+      <Link href={`/restaurant/${slug}/menu`} className="mr-7">
         Menu
       </Link>
     </nav>
