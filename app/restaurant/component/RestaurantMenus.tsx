@@ -1,6 +1,6 @@
 import RestaurantMenuCard from "./RestaurantMenuCard";
 
-const RestaurantMenu = () => {
+const RestaurantMenus = () => {
   return (
     <main className="bg-white mt-5">
       <div>
@@ -14,4 +14,4 @@ const RestaurantMenu = () => {
     </main>
   );
 };
-export default RestaurantMenu;
+export default RestaurantMenus;
