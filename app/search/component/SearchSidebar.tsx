@@ -1,14 +1,35 @@
-import { Cuisine, Location } from "@prisma/client";
+import { Cuisine, Location, PRICE } from "@prisma/client";
 import Link from "next/link";
 
 interface SearchSidebarProps {
   locations: Location[];
   cuisines: Cuisine[];
+  searchParams: {
+    city: string;
+    cuisine?: string;
+    price?: PRICE;
+  };
 }
+const SearchSidebar = async (props: SearchSidebarProps) => {
+  const { locations, cuisines, searchParams } = props;
 
-const SearchSidebar = (props: SearchSidebarProps) => {
-  const { locations, cuisines } = props;
-  console.log("**************************************search sdebar", props);
+  const prices = [
+    {
+      price: PRICE.CHEAP,
+      label: "$",
+      className: "border w-full text-reg font-light rounded-l p-2",
+    },
+    {
+      price: PRICE.REGULAR,
+      label: "$$",
+      className: "border w-full text-reg font-light p-2",
+    },
+    {
+      price: PRICE.EXPENSIVE,
+      label: "$$$",
+      className: "border w-full text-reg font-light rounded-r p-2",
+    },
+  ];
   return (
     <div className="w-1/5">
       <div className="border-b pb-4 flex flex-col">
@@ -18,14 +39,14 @@ const SearchSidebar = (props: SearchSidebarProps) => {
             href={{
               pathname: "/search",
               query: {
-                // ...searchParams,
-                city: location?.name,
+                ...searchParams,
+                city: location.name,
               },
             }}
             className="font-light text-reg capitalize"
-            key={location?.id}
+            key={location.id}
           >
-            {location?.name}
+            {location.name}
           </Link>
         ))}
       </div>
@@ -36,29 +57,35 @@ const SearchSidebar = (props: SearchSidebarProps) => {
             href={{
               pathname: "/search",
               query: {
-                // ...searchParams,
-                cuisine: cuisine?.name,
+                ...searchParams,
+                cuisine: cuisine.name,
               },
             }}
             className="font-light text-reg capitalize"
-            key={cuisine?.id}
+            key={cuisine.id}
           >
-            {cuisine?.name}
+            {cuisine.name}
           </Link>
         ))}
       </div>
-      <div className="mt-3 pb-4 flex flex-col">
+      <div className="mt-3 pb-4">
         <h1 className="mb-2">Price</h1>
         <div className="flex">
-          <button className="border w-full text-reg font-light rounded-l p-2">
-            $
-          </button>
-          <button className="border-r border-t border-b w-full text-reg font-light p-2">
-            $$
-          </button>
-          <button className="border-r border-t border-b w-full text-reg font-light p-2 rounded-r">
-            $$$
-          </button>
+          {prices?.map((price, index) => (
+            <Link
+              key={index}
+              href={{
+                pathname: "/search",
+                query: {
+                  ...searchParams,
+                  price: price.price,
+                },
+              }}
+              className={price.className}
+            >
+              {price.label}
+            </Link>
+          ))}
         </div>
       </div>
     </div>
