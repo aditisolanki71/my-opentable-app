@@ -75,6 +75,7 @@ export default function AuthModal({ isSignin }: { isSignin: boolean }) {
               <AuthModalInputs
                 inputs={inputs}
                 handleChangeInputs={handleChange}
+                isSignIn={isSignin}
               />
               <button
                 className={`uppercase bg-gray-4 w-full  p-3 rounded text-sm mb-5`}
