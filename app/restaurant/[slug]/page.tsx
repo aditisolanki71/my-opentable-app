@@ -6,6 +6,7 @@ import RestaurantImages from "../component/RestaurantImages";
 import RestaurantReviews from "../component/RestaurantReviews";
 import RestaurantReservationCard from "../component/RestaurantReservationCard";
 import { PrismaClient } from "@prisma/client";
+import { notFound } from "next/navigation";
 
 interface RestaurantProps {
   id: string;
@@ -40,7 +41,7 @@ const fetchRestaurantBySlug = async (
     },
   });
   if (!restaurant) {
-    throw new Error("");
+    notFound();
   }
   return restaurant;
 };
