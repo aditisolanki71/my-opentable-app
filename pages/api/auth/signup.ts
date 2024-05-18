@@ -71,9 +71,19 @@ export default async function handler(
       return res.status(400).json({ errorMessage: "Email already in used" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        password: hashedPassword,
+        city,
+        phone,
+        email,
+      },
+    });
 
     return res.status(400).json({
-      hello: hashedPassword,
+      hello: user,
     });
   }
 }
