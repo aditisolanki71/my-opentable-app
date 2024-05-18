@@ -3,22 +3,19 @@ import { NextApiRequest, NextApiResponse } from "next";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import * as jose from "jose";
+import { setCookie } from "cookies-next";
 
 const prisma = new PrismaClient();
-
-//http://localhost:3000/api/auth/signup
-//postman http://localhost:3000/api/auth/signup -->GET nd POST both work
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  //POST Request
   if (req.method === "POST") {
     const body = req.body;
+
     const { firstName, lastName, email, city, phone, password } = body;
     const errors: string[] = [];
-
     const validationSchema = [
       {
         valid: validator.isLength(firstName, {
@@ -71,6 +68,7 @@ export default async function handler(
     if (userWithEmail) {
       return res.status(400).json({ errorMessage: "Email already in used" });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: {
@@ -85,7 +83,6 @@ export default async function handler(
 
     const alg = "HS256";
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-
     const token = await new jose.SignJWT({
       email: user.email,
     })
@@ -93,8 +90,15 @@ export default async function handler(
       .setExpirationTime("24h")
       .sign(secret);
 
-    return res.status(400).json({
-      hello: token,
+    setCookie("jwt", token, { req, res, maxAge: 60 * 6 * 24 });
+    res.status(200).json({
+      firstName: user.first_name,
+      lastName: user.last_name,
+      email: user.email,
+      phone: user.phone,
+      city: user.city,
     });
   }
+
+  return res.status(400).json("unknown endpoint ");
 }
