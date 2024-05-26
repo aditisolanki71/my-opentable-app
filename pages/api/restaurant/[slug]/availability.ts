@@ -60,7 +60,24 @@ export default async function handler(
       }, {});
   });
 
-  return res.json({ searchTimes, bookings, bookingTablesObj });
+  const restaurant = await prisma.restaurant.findUnique({
+    where: {
+      slug,
+    },
+    select: {
+      tables: true,
+    },
+  });
+
+  if (!restaurant) {
+    return res.status(400).json({
+      errorMessage: "Invalid data provider",
+    });
+  }
+
+  const tables = restaurant.tables;
+
+  return res.json({ searchTimes, bookings, bookingTablesObj, tables });
 }
 
 // https://localhost:3000/api/restaurant/vivan-cuisin/availabilty
