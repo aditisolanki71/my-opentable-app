@@ -45,7 +45,22 @@ export default async function handler(
   //   return res.json({ slug, day, time, partySize });
   //http://localhost:3000/api/restaurant/1/availability?day=2023-01-01&time=00:30:00.000Z&partySize=3
   //{"searchTimes":["00:00:00.000Z","00:30:00.000Z","01:00:00.000Z","01:30:00.000Z"]}
-  return res.json({ searchTimes });
+
+  const bookingTablesObj: {
+    [key: string]: { [key: number]: true };
+  } = {};
+
+  bookings.forEach((booking) => {
+    bookingTablesObj[booking.booking_time.toISOString()] =
+      booking.tables.reduce((obj, table) => {
+        return {
+          ...obj,
+          [table.table_id]: true,
+        };
+      }, {});
+  });
+
+  return res.json({ searchTimes, bookings, bookingTablesObj });
 }
 
 // https://localhost:3000/api/restaurant/vivan-cuisin/availabilty
