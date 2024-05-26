@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { times } from "../../../../data";
 interface props {
   slug: string;
   day: string;
@@ -16,7 +17,19 @@ export default async function handler(
     });
   }
 
-  return res.json({ slug, day, time, partySize });
+  const searchTimes = times.find((t) => {
+    return t.time === time;
+  })?.searchTimes;
+
+  if (!searchTimes) {
+    return res.status(400).json({
+      errorMessage: "Invalid data provided",
+    });
+  }
+  //   return res.json({ slug, day, time, partySize });
+  //http://localhost:3000/api/restaurant/1/availability?day=2023-01-01&time=00:30:00.000Z&partySize=3
+  //{"searchTimes":["00:00:00.000Z","00:30:00.000Z","01:00:00.000Z","01:30:00.000Z"]}
+  return res.json({ searchTimes });
 }
 
 // https://localhost:3000/api/restaurant/vivan-cuisin/availabilty
