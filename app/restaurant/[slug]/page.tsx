@@ -14,6 +14,8 @@ interface RestaurantProps {
   images: string[];
   description: string;
   slug: string;
+  open_time: string;
+  close_time: string;
 }
 
 interface RestaurantDetailProps {
@@ -38,6 +40,9 @@ const fetchRestaurantBySlug = async (
       images: true,
       description: true,
       slug: true,
+      // reviews: true,
+      open_time: true,
+      close_time: true,
     },
   });
   if (!restaurant) {
@@ -54,7 +59,8 @@ const RestaurantDeatils = async (props: RestaurantDetailProps) => {
 
   const selectedRestaurant = await fetchRestaurantBySlug(slug);
   console.log("selected restau", selectedRestaurant);
-  const { name, description, images } = selectedRestaurant;
+  const { name, description, images, open_time, close_time } =
+    selectedRestaurant;
 
   return (
     <>
@@ -67,7 +73,10 @@ const RestaurantDeatils = async (props: RestaurantDetailProps) => {
         <RestaurantReviews />
       </div>
       <div className="w-[27%] relative text-reg">
-        <RestaurantReservationCard />
+        <RestaurantReservationCard
+          openTime={open_time}
+          closeTime={close_time}
+        />
       </div>
     </>
   );
