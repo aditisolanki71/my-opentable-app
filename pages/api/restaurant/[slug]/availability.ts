@@ -77,7 +77,21 @@ export default async function handler(
 
   const tables = restaurant.tables;
 
-  return res.json({ searchTimes, bookings, bookingTablesObj, tables });
+  const searchTimeWithTables = searchTimes.map((searchTime) => {
+    return {
+      date: new Date(`${day}T${searchTime}`),
+      time: searchTime,
+      tables,
+    };
+  });
+
+  return res.json({
+    searchTimes,
+    bookings,
+    bookingTablesObj,
+    tables,
+    searchTimeWithTables,
+  });
 }
 
 // https://localhost:3000/api/restaurant/vivan-cuisin/availabilty
