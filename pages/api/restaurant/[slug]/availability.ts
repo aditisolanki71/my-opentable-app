@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { times } from "../../../../data";
+import { PrismaClient } from "@prisma/client";
 interface props {
   slug: string;
   day: string;
@@ -10,6 +11,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const prisma = new PrismaClient();
   const { slug, day, time, partySize } = req.query as Partial<props>;
   if (!day || !time || !partySize) {
     return res.status(400).json({
@@ -26,6 +28,20 @@ export default async function handler(
       errorMessage: "Invalid data provided",
     });
   }
+
+  const bookings = await prisma.booking.findMany({
+    where: {
+      booking_time: {
+        gte: new Date(`${day}T${searchTimes[0]}`),
+        lte: new Date(`${day}T${searchTimes[searchTimes.length - 1]}`),
+      },
+    },
+    select: {
+      number_of_people: true,
+      booking_time: true,
+      tables: true,
+    },
+  });
   //   return res.json({ slug, day, time, partySize });
   //http://localhost:3000/api/restaurant/1/availability?day=2023-01-01&time=00:30:00.000Z&partySize=3
   //{"searchTimes":["00:00:00.000Z","00:30:00.000Z","01:00:00.000Z","01:30:00.000Z"]}
