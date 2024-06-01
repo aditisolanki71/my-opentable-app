@@ -12,6 +12,7 @@ interface RestaurantReservationCardProps {
 const RestaurantReservationCard = (props: RestaurantReservationCardProps) => {
   const { openTime, closeTime } = props;
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  // const data = useAvaila
 
   const handleChangeDate = (date: Date | null) => {
     if (date) {
