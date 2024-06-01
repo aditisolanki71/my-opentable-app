@@ -13,6 +13,7 @@ const useAvailability = () => {
   const [data, setData] = useState(null);
 
   const fetchAvailalities = async ({ slug, partySize, day, time }: Props) => {
+    console.log("hook", slug, partySize, day, time);
     setLoading(true);
     try {
       // await axios.get(`http://localhost:3000/api/restaurant/${slug}/availability?day=${day}&time=${time}&partySize=${partySize}`)

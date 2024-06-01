@@ -1,4 +1,4 @@
-export const partySize = [
+export const partySizes = [
   {
     value: 1,
     label: "1 person",

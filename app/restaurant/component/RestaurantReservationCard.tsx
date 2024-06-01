@@ -1,21 +1,28 @@
 "use client";
 
-import { partySize, times } from "../../../data";
+import { partySizes, times } from "../../../data";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import useAvailability from "../../../hooks/useAvailability";
 
 interface RestaurantReservationCardProps {
   openTime: string;
   closeTime: string;
+  slug: string;
 }
 const RestaurantReservationCard = (props: RestaurantReservationCardProps) => {
-  const { openTime, closeTime } = props;
+  const { openTime, closeTime, slug } = props;
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [time, setTime] = useState(openTime);
+  const [partySize, setPartySize] = useState("2");
+  const [day, setDay] = useState(new Date().toISOString().split("T")[0]);
   // const data = useAvaila
 
   const handleChangeDate = (date: Date | null) => {
     if (date) {
+      const day = date.toISOString().split("T")[0];
+      setDay(day);
       return setSelectedDate(date);
     }
     return setSelectedDate(null);
@@ -41,6 +48,10 @@ const RestaurantReservationCard = (props: RestaurantReservationCardProps) => {
     });
     return timesWithinWindow;
   };
+  const { fetchAvailalities } = useAvailability();
+  const handleClick = () => {
+    fetchAvailalities({ slug, partySize, day, time });
+  };
 
   return (
     <div className="fixed w-[15%] bg-white rounded p-3 shadow">
@@ -49,9 +60,15 @@ const RestaurantReservationCard = (props: RestaurantReservationCardProps) => {
       </div>
       <div className="my-3 flex flex-col">
         <label htmlFor="">Party size</label>
-        <select name="" className="py-3 border-b font-light" id="">
-          {partySize?.length > 0 &&
-            partySize?.map((size) => (
+        <select
+          name=""
+          className="py-3 border-b font-light"
+          id=""
+          value={partySize}
+          onChange={(e) => setPartySize(e.target.value)}
+        >
+          {partySizes?.length > 0 &&
+            partySizes?.map((size) => (
               <option value={size.value}>{size.label}</option>
             ))}
         </select>
@@ -67,9 +84,15 @@ const RestaurantReservationCard = (props: RestaurantReservationCardProps) => {
             wrapperClassName="w-[48%]"
           />
         </div>
-        <div className="flex flex-col w-[48%]">
+        <div className="flex flex-col w-35%]">
           <label htmlFor="">Time</label>
-          <select name="" id="" className="py-3 border-b font-light">
+          <select
+            name=""
+            id=""
+            className="py-3 border-b font-light"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+          >
             {/* {times.map((time) => (
               <option value={time.time}>{time.displayTime}</option>
             ))} */}
@@ -80,7 +103,10 @@ const RestaurantReservationCard = (props: RestaurantReservationCardProps) => {
         </div>
       </div>
       <div className="mt-5">
-        <button className="bg-red-600 rounded w-full px-4 text-white font-bold h-16">
+        <button
+          className="bg-red-600 rounded w-full px-4 text-white font-bold"
+          onClick={handleClick}
+        >
           Find a Time
         </button>
       </div>
