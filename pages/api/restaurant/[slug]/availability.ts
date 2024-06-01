@@ -110,14 +110,14 @@ export default async function handler(
       };
     })
     .filter((availability) => {
-      const timeIsAfterOpeningHours =
+      const timeIsAfterOpeningHour =
         new Date(`${day}T${availability.time}`) >=
         new Date(`${day}T${restaurant.open_time}`);
-      const timeIsBeforeClosingHours =
+      const timeIsBeforeClosingHour =
         new Date(`${day}T${availability.time}`) <=
         new Date(`${day}T${restaurant.close_time}`);
 
-      return timeIsAfterOpeningHours && timeIsBeforeClosingHours;
+      return timeIsAfterOpeningHour && timeIsBeforeClosingHour;
     });
 
   return res.json({

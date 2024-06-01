@@ -5,6 +5,8 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import useAvailability from "../../../hooks/useAvailability";
+import { CircularProgress } from "@mui/material";
+import Link from "next/link";
 
 interface RestaurantReservationCardProps {
   openTime: string;
@@ -17,7 +19,6 @@ const RestaurantReservationCard = (props: RestaurantReservationCardProps) => {
   const [time, setTime] = useState(openTime);
   const [partySize, setPartySize] = useState("2");
   const [day, setDay] = useState(new Date().toISOString().split("T")[0]);
-  // const data = useAvaila
 
   const handleChangeDate = (date: Date | null) => {
     if (date) {
@@ -48,7 +49,8 @@ const RestaurantReservationCard = (props: RestaurantReservationCardProps) => {
     });
     return timesWithinWindow;
   };
-  const { fetchAvailalities } = useAvailability();
+  const { fetchAvailalities, loading, error, data } = useAvailability();
+  console.log("final data is", data);
   const handleClick = () => {
     fetchAvailalities({ slug, partySize, day, time });
   };
@@ -106,10 +108,30 @@ const RestaurantReservationCard = (props: RestaurantReservationCardProps) => {
         <button
           className="bg-red-600 rounded w-full px-4 text-white font-bold"
           onClick={handleClick}
+          disabled={loading}
         >
-          Find a Time
+          {loading ? <CircularProgress /> : "Find a Time"}
         </button>
       </div>
+      {data && data?.length > 0 ? (
+        <div className="mt-4">
+          <p className="text-red">Select a time</p>
+          <div className="flex flex-wrap mt-2">
+            {data?.map((time) => {
+              return time.available ? (
+                <Link
+                  href={`/reserve/${slug}?date=${day}T${time.time}&partySize=${partySize}`}
+                  className="bg-red-600 cursor-pointer p-2 w-24 text-center text-white mb-3 rounded mr-3"
+                >
+                  <p className="text-sm font-bold">{time.time}</p>
+                </Link>
+              ) : (
+                <p className="bg-gray-300 p-2 w-24 mb-3 rounded mr-3"></p>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

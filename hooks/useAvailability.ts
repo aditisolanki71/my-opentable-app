@@ -10,7 +10,9 @@ interface Props {
 const useAvailability = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<{ time: string; available: boolean }[]>(
+    [] | null
+  );
 
   const fetchAvailalities = async ({ slug, partySize, day, time }: Props) => {
     console.log("hook", slug, partySize, day, time);
@@ -28,7 +30,8 @@ const useAvailability = () => {
         }
       );
       setLoading(false);
-      setData(response.data);
+      console.log("response data is", response.data);
+      setData(response.data.availabilities);
     } catch (e) {
       setLoading(false);
       setError(error?.response?.data?.errorMessage || "err");
