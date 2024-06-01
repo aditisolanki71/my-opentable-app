@@ -25,7 +25,7 @@ export default async function handler(
 
   if (!searchTimes) {
     return res.status(400).json({
-      errorMessage: "Invalid data provided",
+      errorMessage: "Invalid data provided2",
     });
   }
 
@@ -95,17 +95,30 @@ export default async function handler(
       return true;
     });
   });
+
+  const availabilities = searchTimeWithTables.map((t) => {
+    const sumSeats = t.tables.reduce((sum, table) => {
+      return sum + table.seats;
+    }, 0);
+
+    return {
+      time: t.time,
+      available: sumSeats >= parseInt(partySize),
+    };
+  });
+
   return res.json({
     searchTimes,
     bookings,
     bookingTablesObj,
     tables,
     searchTimeWithTables,
+    availabilities,
   });
 }
 
 // https://localhost:3000/api/restaurant/vivan-cuisin/availabilty
 // {"errorMessage":"Invalid data provided"}
 
-//http://localhost:3000/api/restaurant/1/availability?day=2023-01-01&time=20:00:00.000Z&partySize=3
+//http://localhost:3000/api/restaurant/1/availability?day=2023-01-01&time=15:00:00.000Z&partySize=4
 // {"slug":"1","day":"2023-01-01","time":"20:00:00.000Z","partySize":"3"}
