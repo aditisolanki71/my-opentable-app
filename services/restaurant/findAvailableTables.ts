@@ -85,7 +85,7 @@ const findAvailableTables = async ({
 
   const tables = restaurant.tables;
 
-  const searchTimeWithTables = searchTimes.map((searchTime) => {
+  const searchTimesWithTables = searchTimes.map((searchTime) => {
     return {
       date: new Date(`${day}T${searchTime}`),
       time: searchTime,
@@ -93,7 +93,7 @@ const findAvailableTables = async ({
     };
   });
 
-  searchTimeWithTables.forEach((t) => {
+  searchTimesWithTables.forEach((t) => {
     t.tables = t.tables.filter((table) => {
       if (bookingTablesObj[t.date.toISOString()]) {
         if (bookingTablesObj[t.date.toISOString()][table.id]) {
@@ -103,8 +103,6 @@ const findAvailableTables = async ({
       return true;
     });
   });
-  return res.status(400).json({
-    searchTimeWithTables,
-  });
+  return searchTimesWithTables;
 };
 export default findAvailableTables;

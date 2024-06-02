@@ -55,26 +55,63 @@ export default async function handler(
     restaurant,
   });
 
-  if (!searchTimesWithTables) {
-    return res.status(400).json({
-      errorMessage: "Invalid data",
-    });
-  }
+  //   if (!searchTimesWithTables) {
+  //     return res.status(400).json({
+  //       errorMessage: "Invalid data",
+  //     });
+  //   }
 
+  console.log("1 is", searchTimesWithTables);
   const searchTimeWithTables = searchTimesWithTables?.find((t) => {
     console.log("time date", t.date);
     console.log("new date", new Date(`${day}T${time}`));
     return t.date.toISOString() === new Date(`${day}T${time}`).toISOString();
   });
 
-  if (!searchTimeWithTables) {
-    return res.status(400).json({
-      errorMessage: "No Availability",
-    });
-  }
+  console.log("hey there", searchTimeWithTables);
+  //   if (!searchTimeWithTables) {
+  //     return res.status(400).json({
+  //       errorMessage: "No Availability",
+  //     });
+  //   }
+
+  //we have data like this
+  //   {
+  //     date: 2023-05-22T02:30:00.000Z
+  //     time: "02:30:00.000z",
+  //     tables: [
+  //         {id:1, restaurant_id: 1,seats:4},
+  //         {id:2, restaurant_id: 1,seats:4},
+  //         {id:3, restaurant_id: 1,seats:4},
+  //         {id:4, restaurant_id: 1,seats:2},
+  //     ]
+  //   }
+
+  //need in below format
+  // {
+  //     2: [4] -->table id 4 contains 2 seats
+  //     4: [1,2,3] -->table id 1,2,3 contains 4 seats
+  // }
+
+  const tablesCount: {
+    2: number[];
+    4: number[];
+  } = {
+    2: [],
+    4: [],
+  };
+
+  searchTimeWithTables?.tables.forEach((table) => {
+    if (table.seats === 2) {
+      tablesCount[2].push(table.id);
+    } else {
+      tablesCount[4].push(table.id);
+    }
+  });
+
   return res.status(400).json({
-    searchTimeWithTables,
-    searchTimesWithTables,
+    aditi: "hey",
+    tablesCount,
   });
 }
 
