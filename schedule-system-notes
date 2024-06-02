@@ -1,1 +1,4 @@
 determine all available tables based on that datetime nd partysize
+
+
+extract table availability logic into it's own fun

@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { times } from "../../../../data";
 import { PrismaClient } from "@prisma/client";
+import findAvailableTables from "../../../../services/restaurant/findAvailableTables";
 interface props {
   slug: string;
   day: string;
@@ -18,47 +19,6 @@ export default async function handler(
       errorMessage: "Invalid data provided",
     });
   }
-
-  const searchTimes = times.find((t) => {
-    return t.time === time;
-  })?.searchTimes;
-
-  if (!searchTimes) {
-    return res.status(400).json({
-      errorMessage: "Invalid data provided2",
-    });
-  }
-
-  const bookings = await prisma.booking.findMany({
-    where: {
-      booking_time: {
-        gte: new Date(`${day}T${searchTimes[0]}`),
-        lte: new Date(`${day}T${searchTimes[searchTimes.length - 1]}`),
-      },
-    },
-    select: {
-      number_of_people: true,
-      booking_time: true,
-      tables: true,
-    },
-  });
-  //   return res.json({ slug, day, time, partySize });
-  //http://localhost:3000/api/restaurant/1/availability?day=2023-01-01&time=00:30:00.000Z&partySize=3
-  //{"searchTimes":["00:00:00.000Z","00:30:00.000Z","01:00:00.000Z","01:30:00.000Z"]}
-
-  const bookingTablesObj: {
-    [key: string]: { [key: number]: true };
-  } = {};
-
-  bookings.forEach((booking) => {
-    bookingTablesObj[booking.booking_time.toISOString()] =
-      booking.tables.reduce((obj, table) => {
-        return {
-          ...obj,
-          [table.table_id]: true,
-        };
-      }, {});
-  });
 
   const restaurant = await prisma.restaurant.findUnique({
     where: {
@@ -79,26 +39,15 @@ export default async function handler(
 
   const tables = restaurant.tables;
 
-  const searchTimeWithTables = searchTimes.map((searchTime) => {
-    return {
-      date: new Date(`${day}T${searchTime}`),
-      time: searchTime,
-      tables,
-    };
-  });
 
-  searchTimeWithTables.forEach((t) => {
-    t.tables = t.tables.filter((table) => {
-      if (bookingTablesObj[t.date.toISOString()]) {
-        if (bookingTablesObj[t.date.toISOString()][table.id]) {
-          return false;
-        }
-      }
-      return true;
-    });
-  });
+  const searchTimeWithTables = await findAvailableTables({ time, day, res,restaurant });
 
-  const availabilities = searchTimeWithTables
+  if(!searchTimeWithTables) {
+    return res.status(400).json({
+        errorMessage: "Invalid data",
+      });
+  }
+  const availabilities = searchTimeWithTables?
     .map((t) => {
       const sumSeats = t.tables.reduce((sum, table) => {
         return sum + table.seats;
@@ -121,11 +70,6 @@ export default async function handler(
     });
 
   return res.json({
-    searchTimes,
-    bookings,
-    bookingTablesObj,
-    tables,
-    searchTimeWithTables,
     availabilities,
   });
 }
