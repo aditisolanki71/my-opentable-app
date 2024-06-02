@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
 interface props {
@@ -6,7 +7,7 @@ interface props {
   time: string;
   partySize: string;
 }
-
+const prisma = new PrismaClient();
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -17,6 +18,27 @@ export default async function handler(
   if (!day || !time || !partySize) {
     return res.status(400).json({
       errorMessage: "fail",
+    });
+  }
+
+  const restaurant = await prisma.restaurant.findUnique({
+    where: {
+      slug,
+    },
+  });
+
+  if (!restaurant) {
+    return res.status(400).json({
+      errorMessage: "Invalid data provided",
+    });
+  }
+
+  if (
+    new Date(`${day}T${time}`) < new Date(`${day}T${restaurant.open_time}`) ||
+    new Date(`${day}T${time}`) > new Date(`${day}T${restaurant.close_time}`)
+  ) {
+    return res.status(400).json({
+      errorMessage: "Restaurant not found",
     });
   }
   return res.status(400).json({
