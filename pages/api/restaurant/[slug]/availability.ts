@@ -40,14 +40,14 @@ export default async function handler(
   const tables = restaurant.tables;
 
 
-  const searchTimeWithTables = await findAvailableTables({ time, day, res,restaurant });
+  const searchTimesWithTables = await findAvailableTables({ time, day, res,restaurant });
 
-  if(!searchTimeWithTables) {
+  if(!searchTimesWithTables) {
     return res.status(400).json({
         errorMessage: "Invalid data",
       });
   }
-  const availabilities = searchTimeWithTables?
+  const availabilities = searchTimesWithTables?
     .map((t) => {
       const sumSeats = t.tables.reduce((sum, table) => {
         return sum + table.seats;
