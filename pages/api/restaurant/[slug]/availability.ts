@@ -12,6 +12,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+    if(req.method === 'GET') {
   const prisma = new PrismaClient();
   const { slug, day, time, partySize } = req.query as Partial<props>;
   if (!day || !time || !partySize) {
@@ -72,6 +73,7 @@ export default async function handler(
   return res.json({
     availabilities,
   });
+}
 }
 
 // https://localhost:3000/api/restaurant/vivan-cuisin/availabilty

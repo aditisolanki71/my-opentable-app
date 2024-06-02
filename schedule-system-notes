@@ -2,3 +2,56 @@ determine all available tables based on that datetime nd partysize
 
 
 extract table availability logic into it's own fun
+
+
+
+Postman:-
+POST
+http://localhost:3000/api/restaurant/vivaan-fine-indian-cuisine-ottawa/reserve?day=2023-01-01&time=00:30:00.000Z&partySize=3
+
+rEQUEST BODY:-
+{
+   "bookerEmail": "aditi@gmail.com",
+   "bookerPhone": "12345",
+   "bookerFirstName": "Aditi",
+   "bookerLastName": "Solanki",
+   "bookerOccasion": "a",
+   "bookerRequest": "a"
+}
+
+rESPONSE:-
+{
+    "tablesCount": {
+        "2": [
+            9
+        ],
+        "4": [
+            8
+        ]
+    },
+    "tablesToBooks": [
+        7
+    ],
+    "booking": {
+        "id": 1,
+        "number_of_people": 3,
+        "booking_time": "2023-01-01T00:30:00.000Z",
+        "booker_email": "aditi@gmail.com",
+        "booker_phone": "12345",
+        "booker_first_name": "Aditi",
+        "booker_last_name": "Solanki",
+        "booker_occasion": null,
+        "booker_request": "a",
+        "restaurant_id": 433,
+        "created_at": "2024-06-02T09:49:47.373Z",
+        "updated_at": "2024-06-02T09:49:47.373Z"
+    }
+}
+
+
+CHROME:-
+http://localhost:3000/api/restaurant/vivaan-fine-indian-cuisine-ottawa/reserve?day=2023-01-01&time=00:00:00.000Z&partySize=2
+
+
+rESPONSE
+{"tablesCount":{"2":[],"4":[7,8]},"tablesToBooks":[9]}
